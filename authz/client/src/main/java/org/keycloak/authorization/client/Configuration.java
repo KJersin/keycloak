@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Properties;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.keycloak.representations.adapters.config.AdapterConfig;
@@ -61,7 +62,12 @@ public class Configuration extends AdapterConfig {
 
     public HttpClient getHttpClient() {
         if (this.httpClient == null) {
-            this.httpClient = HttpClients.createDefault();
+            // Use system http client if specified
+            if (Boolean.getBoolean("java.net.useSystemProxies")) {
+                this.httpClient = HttpClients.createSystem();
+            } else {
+                this.httpClient = HttpClients.createDefault();
+            }
         }
         return httpClient;
     }
